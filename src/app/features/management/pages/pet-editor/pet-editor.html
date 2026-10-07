@@ -1,0 +1,247 @@
+<section class="container editor-page">
+  <a routerLink="/ong" class="back-link">← Voltar para meus pets</a>
+  <span class="eyebrow">ÁREA DA ONG</span>
+  <h1>{{ id ? 'Editar pet' : 'Uma nova história' }}</h1>
+  <p class="muted">
+    {{
+      id
+        ? 'Mantenha as informações deste amigo atualizadas.'
+        : 'Apresente um novo amigo para quem quer adotar.'
+    }}
+  </p>
+  @if (message()) {
+    <p class="success-message" role="status">{{ message() }}</p>
+  }
+  @if (error()) {
+    <p class="error-message" role="alert">{{ error() }}</p>
+  }
+  @if (loading()) {
+    <p class="management-state" role="status">Carregando cadastro...</p>
+  } @else if (id && !pet()) {
+    <button hlmBtn variant="outline" (click)="load(true)">Tentar novamente</button>
+  } @else {
+    <div class="editor-layout">
+      <form [formGroup]="form" (ngSubmit)="save()" class="editor-panel">
+        <h2>Sobre o pet</h2>
+        <p class="panel-description">Nome e descrição são obrigatórios.</p>
+        <fieldset [disabled]="saving()">
+          <label for="pet-name">Nome *</label
+          ><input
+            id="pet-name"
+            formControlName="name"
+            maxlength="100"
+            autocomplete="off"
+            placeholder="Como ele se chama?"
+          />
+          @if (form.controls.name.touched && form.controls.name.invalid) {
+            <p class="field-error">Informe um nome com até 100 caracteres.</p>
+          }
+          <label for="pet-breed">Raça</label
+          ><input id="pet-breed" formControlName="breed" maxlength="100" placeholder="Ex.: SRD" />
+          <div class="field-row">
+            <div>
+              <label for="pet-age">Idade em anos</label
+              ><input
+                id="pet-age"
+                type="number"
+                formControlName="ageInYears"
+                min="0"
+                max="99"
+                step="1"
+                placeholder="Não informada"
+              />
+              <p class="field-hint">Use 0 para menos de um ano.</p>
+              @if (form.controls.ageInYears.touched && form.controls.ageInYears.invalid) {
+                <p class="field-error">Use um inteiro de 0 a 99.</p>
+              }
+            </div>
+            <div>
+              <label for="pet-rescue">Data do resgate</label
+              ><input id="pet-rescue" type="date" formControlName="rescueDate" [max]="today" />
+              @if (form.controls.rescueDate.touched && form.controls.rescueDate.invalid) {
+                <p class="field-error">A data não pode estar no futuro.</p>
+              }
+            </div>
+          </div>
+          <label for="pet-about">Descrição *</label
+          ><textarea
+            id="pet-about"
+            formControlName="about"
+            maxlength="500"
+            rows="5"
+            placeholder="Conte a história, o temperamento e os cuidados deste pet."
+          ></textarea>
+          <p class="field-hint">{{ form.controls.about.value?.length ?? 0 }}/500 caracteres</p>
+          @if (form.controls.about.touched && form.controls.about.invalid) {
+            <p class="field-error">Informe uma descrição com até 500 caracteres.</p>
+          }
+          @if (id) {
+            <label class="checkbox-label"
+              ><input type="checkbox" formControlName="adopted" />Este pet já foi adotado</label
+            >
+            <p class="field-hint">Pets adotados deixam de aparecer na vitrine pública.</p>
+          }
+          <button hlmBtn type="submit" class="action-button save-pet" [disabled]="saving()">
+            {{ saving() ? 'Salvando...' : id ? 'Salvar dados do pet' : 'Cadastrar pet'
+            }}<app-icon name="arrow" />
+          </button>
+        </fieldset>
+      </form>
+      <div class="editor-extras">
+        <section class="editor-panel" aria-labelledby="photos-title">
+          <h2 id="photos-title">
+            Fotos <span>{{ (pet()?.images?.length ?? 0) + pendingPhotos().length }}/4</span>
+          </h2>
+          <p class="panel-description">JPEG, PNG, WebP ou AVIF. Até 10 MB por foto.</p>
+          <div class="photo-grid">
+            @for (image of pet()?.images ?? []; track image.id) {
+              <div class="photo-item">
+                <img [src]="safeImage(image.filePath)" [alt]="pet()!.name" /><app-confirm-delete
+                  label="Excluir foto"
+                  title="Excluir esta foto?"
+                  description="A foto será removida permanentemente do cadastro e da vitrine."
+                  [disabled]="saving()"
+                  (confirmed)="deletePhoto(image.id)"
+                />
+              </div>
+            }
+            @for (photo of pendingPhotos(); track photo.url) {
+              <div class="photo-item">
+                <img [src]="photo.url" [alt]="'Prévia de ' + photo.file.name" /><button
+                  hlmBtn
+                  variant="outline"
+                  [disabled]="saving()"
+                  (click)="removePendingPhoto(photo)"
+                >
+                  Remover seleção
+                </button>
+              </div>
+            }
+          </div>
+          <label class="upload-label" for="pet-images"><app-icon />Escolher fotos</label
+          ><input
+            id="pet-images"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/avif"
+            multiple
+            (change)="selectPhotos($event)"
+            [disabled]="saving() || (pet()?.images?.length ?? 0) + pendingPhotos().length >= 4"
+          />
+          @if (id && pendingPhotos().length) {
+            <button hlmBtn class="action-button" [disabled]="saving()" (click)="uploadPhotos()">
+              Enviar fotos selecionadas
+            </button>
+          }
+          <p class="field-hint">
+            {{
+              id
+                ? 'Fotos são enviadas e excluídas separadamente dos dados do pet.'
+                : 'As fotos selecionadas serão enviadas ao cadastrar o pet.'
+            }}
+          </p>
+        </section>
+        <section class="editor-panel" aria-labelledby="vaccines-title">
+          <h2 id="vaccines-title">Vacinas</h2>
+          <p class="panel-description">Registre as vacinas e suas datas de aplicação.</p>
+          <ul class="vaccine-list">
+            @for (vaccine of pet()?.vaccines ?? []; track vaccine.id) {
+              <li>
+                <div>
+                  <strong>{{ vaccine.name }}</strong
+                  ><span>{{
+                    vaccine.applicationDate
+                      ? (vaccine.applicationDate | date: 'dd/MM/yyyy' : 'UTC')
+                      : 'Data não informada'
+                  }}</span>
+                </div>
+                <div class="vaccine-actions">
+                  <button
+                    hlmBtn
+                    variant="outline"
+                    [disabled]="saving()"
+                    (click)="editVaccine(vaccine)"
+                  >
+                    Editar</button
+                  ><app-confirm-delete
+                    label="Excluir"
+                    title="Excluir esta vacina?"
+                    description="Este registro de vacinação será removido permanentemente."
+                    [disabled]="saving()"
+                    (confirmed)="deleteVaccine(vaccine.id)"
+                  />
+                </div>
+              </li>
+            }
+            @for (vaccine of pendingVaccines(); track $index) {
+              <li>
+                <div>
+                  <strong>{{ vaccine.name }}</strong
+                  ><span>{{
+                    vaccine.applicationDate
+                      ? (vaccine.applicationDate | date: 'dd/MM/yyyy' : 'UTC')
+                      : 'Data não informada'
+                  }}</span>
+                </div>
+                <button
+                  hlmBtn
+                  variant="outline"
+                  [disabled]="saving()"
+                  (click)="removePendingVaccine($index)"
+                >
+                  Remover seleção
+                </button>
+              </li>
+            }
+          </ul>
+          <form [formGroup]="vaccineForm" (ngSubmit)="saveVaccine()">
+            <fieldset [disabled]="saving()">
+              <label for="vaccine-name">{{
+                editingVaccine() ? 'Editar vacina' : 'Nome da vacina'
+              }}</label
+              ><input
+                id="vaccine-name"
+                formControlName="name"
+                maxlength="100"
+                placeholder="Ex.: Antirrábica"
+              /><label for="vaccine-date">Data da aplicação</label
+              ><input
+                id="vaccine-date"
+                type="date"
+                formControlName="applicationDate"
+                [max]="today"
+              />
+              @if (
+                vaccineForm.controls.applicationDate.touched &&
+                vaccineForm.controls.applicationDate.invalid
+              ) {
+                <p class="field-error">A aplicação não pode estar no futuro.</p>
+              }
+              <div class="vaccine-form-actions">
+                <button
+                  hlmBtn
+                  type="submit"
+                  variant="secondary"
+                  [disabled]="saving() || vaccineForm.invalid"
+                >
+                  {{ editingVaccine() ? 'Salvar vacina' : 'Adicionar vacina' }}
+                </button>
+                @if (editingVaccine()) {
+                  <button hlmBtn type="button" variant="ghost" (click)="cancelVaccine()">
+                    Cancelar
+                  </button>
+                }
+              </div>
+            </fieldset>
+          </form>
+          <p class="field-hint">
+            {{
+              id
+                ? 'As alterações nas vacinas são salvas imediatamente.'
+                : 'As vacinas adicionadas serão salvas ao cadastrar o pet.'
+            }}
+          </p>
+        </section>
+      </div>
+    </div>
+  }
+</section>

@@ -1,0 +1,209 @@
+.editor-page {
+  padding-block: 44px 65px;
+  min-height: 650px;
+}
+.back-link {
+  display: block;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+.editor-page > h1 {
+  font-size: 36px;
+  font-weight: 750;
+  letter-spacing: -1px;
+  margin-top: 12px;
+}
+.editor-layout {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 24px;
+  align-items: start;
+  margin-top: 30px;
+}
+.editor-panel {
+  padding: 28px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  min-width: 0;
+}
+.editor-panel h2 {
+  font-size: 22px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.editor-panel h2 span {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  font-weight: 400;
+}
+.panel-description {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  line-height: 1.7;
+  margin: 8px 0 20px;
+}
+.editor-panel label:not(.checkbox-label):not(.upload-label) {
+  display: block;
+  font-size: 12px;
+  font-weight: 650;
+  margin: 20px 0 8px;
+}
+.editor-panel input:not([type='checkbox']):not([type='file']),
+.editor-panel textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 11px 12px;
+  font-size: 13px;
+  background: white;
+}
+.editor-panel textarea {
+  resize: vertical;
+}
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.field-hint {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+  margin-top: 7px;
+}
+.field-error {
+  color: var(--destructive);
+  font-size: 12px;
+  margin-top: 7px;
+}
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  font-size: 13px;
+}
+.checkbox-label input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--blue);
+}
+.save-pet {
+  margin-top: 26px;
+  width: 100%;
+}
+.editor-extras {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.photo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.photo-item {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 8px;
+}
+.photo-item img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: var(--ice);
+}
+.photo-item button {
+  font-size: 11px;
+}
+.upload-label {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+  margin: 22px 0 10px;
+}
+.editor-panel input[type='file'] {
+  width: 100%;
+  font-size: 11px;
+  color: var(--muted-foreground);
+  padding: 8px 0;
+}
+.editor-panel input[type='file']::file-selector-button {
+  padding: 9px 12px;
+  background: var(--ice);
+  border: 0;
+  border-radius: 8px;
+  font: inherit;
+  color: var(--navy);
+  cursor: pointer;
+  margin-right: 8px;
+}
+.editor-panel > .action-button {
+  margin: 16px 0 4px;
+  white-space: normal;
+}
+.vaccine-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.vaccine-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+}
+.vaccine-list strong {
+  display: block;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.vaccine-list span {
+  display: block;
+  font-size: 11px;
+  color: var(--muted-foreground);
+  margin-top: 4px;
+}
+.vaccine-actions,
+.vaccine-form-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.vaccine-form-actions {
+  margin-top: 18px;
+}
+@media (max-width: 800px) {
+  .editor-layout {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 420px) {
+  .editor-page > h1 {
+    font-size: 30px;
+  }
+  .editor-panel {
+    padding: 22px;
+  }
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+  .photo-grid {
+    gap: 10px;
+  }
+}

@@ -1,0 +1,279 @@
+:host {
+  display: block;
+  height: 100%;
+}
+.pet-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border: 1px solid #e4eaf0;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 3px 12px #03045e04;
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+.pet-card:hover {
+  box-shadow: 0 10px 26px #03045e0d;
+  transform: translateY(-3px);
+}
+.pet-photo {
+  position: relative;
+  aspect-ratio: 1.48;
+  overflow: hidden;
+  background: var(--ice);
+}
+.pet-photo > img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+.photo-placeholder {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  color: #526a84;
+  font-size: 12px;
+}
+.photo-placeholder app-icon {
+  font-size: 45px;
+  color: var(--cyan);
+}
+.adoption-badge {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fffffff2;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 650;
+  color: var(--navy);
+}
+.adoption-badge > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #25855d;
+}
+.photo-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffffffed;
+  color: var(--navy);
+  cursor: pointer;
+}
+.photo-arrow.prev {
+  left: 12px;
+}
+.prev app-icon {
+  transform: rotate(180deg);
+}
+.photo-arrow.next {
+  right: 12px;
+}
+.photo-dots {
+  position: absolute;
+  bottom: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  padding: 0 6px;
+  background: #03045e40;
+  border-radius: 20px;
+}
+.photo-dots button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+}
+.photo-dots span {
+  height: 6px;
+  width: 6px;
+  background: #ffffff90;
+  border-radius: 50%;
+}
+.photo-dots .current span {
+  background: white;
+  width: 15px;
+}
+.pet-content {
+  padding: 21px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.pet-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.pet-heading h3 {
+  font-size: 24px;
+  font-weight: 750;
+  letter-spacing: -0.7px;
+  color: var(--navy);
+}
+.pet-heading > app-icon {
+  color: var(--cyan);
+  font-size: 18px;
+}
+.pet-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #52627c;
+}
+.pet-meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pet-meta app-icon {
+  font-size: 11px;
+  color: var(--blue);
+}
+.pet-about {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #63718a;
+  margin: 14px 0;
+  overflow-wrap: anywhere;
+}
+.vaccine-note {
+  font-size: 11px;
+  color: #387664;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.pet-vaccines {
+  margin-bottom: 16px;
+  border: 1px solid #dcece6;
+  border-radius: 10px;
+  background: #f6fbf8;
+  color: #28705a;
+}
+.pet-vaccines summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  min-height: 44px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 12px;
+  font-weight: 600;
+}
+.pet-vaccines summary::-webkit-details-marker {
+  display: none;
+}
+.pet-vaccines summary:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+.vaccine-chevron {
+  margin-left: auto;
+  transform: rotate(90deg);
+}
+.pet-vaccines[open] .vaccine-chevron {
+  transform: rotate(-90deg);
+}
+.pet-vaccines ul {
+  list-style: none;
+  margin: 0;
+  padding: 0 12px 12px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+.pet-vaccines li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 0;
+  border-top: 1px solid #dcece6;
+  overflow-wrap: anywhere;
+}
+.pet-vaccines li strong {
+  font-size: 12px;
+  font-weight: 600;
+}
+.pet-vaccines li span {
+  color: #63718a;
+  font-size: 11px;
+}
+brn-popover {
+  display: block;
+  margin-top: auto;
+}
+.contact-button {
+  width: 100%;
+  min-height: 44px;
+  background: var(--gold);
+  color: var(--navy);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  gap: 8px;
+}
+.contact-button > app-icon:last-child {
+  margin-left: auto;
+}
+.contact-button:hover {
+  background: #f5a218;
+}
+.contact-popover {
+  background: white;
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 40px #03045e20;
+  border-radius: 14px;
+  padding: 20px;
+  width: 290px;
+  max-width: calc(100vw - 32px);
+  color: var(--navy);
+}
+.contact-popover strong {
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+.contact-popover p {
+  color: #63718a;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 7px 0 12px;
+}
+.contact-popover a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 9px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.contact-popover a:hover {
+  background: var(--ice);
+}
+.contact-popover a app-icon:last-child {
+  margin-left: auto;
+}

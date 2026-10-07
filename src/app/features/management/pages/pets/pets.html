@@ -1,0 +1,108 @@
+<section class="container management-page">
+  <div class="management-heading">
+    <div>
+      <span class="eyebrow">ÁREA DA ONG</span>
+      <h1>Meus pets</h1>
+      <p class="muted">Cuide das histórias que vão encontrar uma nova família.</p>
+    </div>
+    @if (!passwordChange()) {
+      <a hlmBtn routerLink="/ong/novo" class="action-button"><app-icon />Cadastrar pet</a>
+    }
+  </div>
+  @if (message()) {
+    <p class="success-message" role="status">{{ message() }}</p>
+  }
+  @if (passwordChange()) {
+    <app-password-change (changed)="passwordChanged()" />
+  } @else {
+    @if (error()) {
+      <div class="error-message" role="alert">
+        <p>{{ error() }}</p>
+        @if (!result()) {
+          <button hlmBtn variant="outline" (click)="load(1)">Tentar novamente</button>
+        }
+      </div>
+    }
+    @if (busy()) {
+      <p class="management-state" role="status">Carregando seus pets...</p>
+    } @else if (result()?.items?.length) {
+      <p class="list-count">
+        {{ result()!.totalCount }}
+        {{ result()!.totalCount === 1 ? 'pet cadastrado' : 'pets cadastrados' }}
+      </p>
+      <div class="manager-grid">
+        @for (pet of result()!.items; track pet.id) {
+          <article class="manager-card">
+            <div class="manager-photo">
+              <app-icon />
+              @if (imageUrl(pet); as url) {
+                <img [src]="url" [alt]="pet.name" loading="lazy" (error)="imageFailed($event)" />
+              }
+              <span class="status-tag" [class.adopted]="pet.isAdopted">{{
+                pet.isAdopted ? 'Adotado' : 'Disponível'
+              }}</span>
+            </div>
+            <div class="manager-content">
+              <h2>{{ pet.name }}</h2>
+              <p>
+                {{ pet.breed || 'Raça não informada' }} ·
+                {{
+                  pet.ageInYears == null
+                    ? 'Idade não informada'
+                    : pet.ageInYears === 0
+                      ? 'Menos de 1 ano'
+                      : pet.ageInYears + ' ano(s)'
+                }}
+              </p>
+              <p class="manager-about">{{ pet.about }}</p>
+              <span class="manager-details"
+                >{{ pet.images.length }} foto(s) · {{ pet.vaccines.length }} vacina(s)</span
+              >
+              <div class="manager-actions">
+                <a
+                  hlmBtn
+                  variant="outline"
+                  [routerLink]="['/ong', pet.id, 'editar']"
+                  [attr.aria-disabled]="actionId() ? true : null"
+                  >Editar pet<app-icon name="arrow" /></a
+                ><button
+                  hlmBtn
+                  variant="secondary"
+                  [disabled]="!!actionId()"
+                  (click)="toggleAdoption(pet)"
+                >
+                  {{
+                    actionId() === pet.id
+                      ? 'Salvando...'
+                      : pet.isAdopted
+                        ? 'Disponibilizar para adoção'
+                        : 'Marcar como adotado'
+                  }}</button
+                ><app-confirm-delete
+                  label="Excluir pet"
+                  [title]="'Excluir ' + pet.name + '?'"
+                  description="O cadastro, as fotos e as vacinas deste pet serão excluídos permanentemente."
+                  [disabled]="!!actionId()"
+                  (confirmed)="remove(pet)"
+                />
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+      <app-pagination
+        [page]="result()!.pageNumber"
+        [totalPages]="result()!.totalPages"
+        [disabled]="busy() || !!actionId()"
+        (pageChange)="load($event)"
+      />
+    } @else if (!error()) {
+      <div class="management-empty">
+        <app-icon name="heart" />
+        <h2>A primeira história começa aqui.</h2>
+        <p>Cadastre um pet para apresentá-lo na vitrine de adoção.</p>
+        <a hlmBtn routerLink="/ong/novo" class="action-button">Cadastrar primeiro pet</a>
+      </div>
+    }
+  }
+</section>
