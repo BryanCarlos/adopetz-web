@@ -5,7 +5,7 @@ import { Header } from './shared/components/header/header';
 @Component({
   imports: [RouterOutlet, RouterLink, Header],
   selector: 'app-root',
-  styleUrl: './app.css',
+  host: { class: 'block min-h-[100dvh]' },
   templateUrl: './app.html',
 })
 export class App {}

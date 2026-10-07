@@ -75,6 +75,10 @@ Guardar um JWT em memória reduz sua persistência/exposição, mas um JWT váli
 
 ## Verificações
 
+A interface usa os componentes Helm do Spartan em `libs/ui`, gerados pelo CLI: campos e validação de formulários, checkbox, cartões, badges, carrossel, collapsible de vacinas, popover de contatos, diálogos, paginação, alertas, estados vazios, skeletons e spinner. Os ícones usam Lucide com `@ng-icons`. O layout e a responsividade usam utilitários Tailwind nos templates; `src/styles.css` contém imports, tokens do tema e regras base com `@apply`.
+
+Os componentes copiados de botão e input foram ajustados para alvos de interação maiores. As variantes `adoption` e `navigation` ficam no componente de botão e usam cores semânticas do tema. As datas continuam em campos nativos com `hlmInput`, preservando limites e integração com os formulários.
+
 Testes do frontend cobrem renovação concorrente, temporizador, expiração, erros de rede, logout durante rotação, guard, carrossel, contatos, multipart e preservação de uploads/formulários. Testes HTTP usam respostas simuladas e não alteram dados reais.
 
 Na pasta `adopetz-api`, execute `dotnet run --project tests/Adopetz.Api.RegressionTests` para validar limites de idade, isolamento das ONGs, o filtro de paginação, datas de vacinação e status HTTP de erros. Essas verificações não acessam o banco.

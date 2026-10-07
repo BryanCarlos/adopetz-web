@@ -1,3 +1,7 @@
+import { HlmAlertImports } from '@spartan-ng/helm/alert';
+import { HlmCardImports } from '@spartan-ng/helm/card';
+import { HlmFieldImports } from '@spartan-ng/helm/field';
+import { HlmInputImports } from '@spartan-ng/helm/input';
 import { Component, inject, signal, output, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -7,44 +11,63 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { apiError } from '../../../../core/utils/api-error';
 @Component({
   selector: 'app-password-change',
-  imports: [FormsModule, HlmButtonImports],
-  template: `<form #form="ngForm" class="form-panel password-panel" (ngSubmit)="save(form)">
-    <h2>Crie sua nova senha</h2>
-    <p>Altere a senha inicial para começar a gerenciar os pets.</p>
-    <label for="current">Senha atual</label
-    ><input
-      id="current"
-      name="current"
-      type="password"
-      [(ngModel)]="current"
-      required
-      autocomplete="current-password"
-      [disabled]="busy()"
-    />
-    <label for="new">Nova senha</label
-    ><input
-      id="new"
-      name="new"
-      type="password"
-      [(ngModel)]="password"
-      required
-      minlength="8"
-      pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}"
-      autocomplete="new-password"
-      [disabled]="busy()"
-    />
-    <p>Use pelo menos 8 caracteres, com maiúscula, minúscula e número.</p>
-    @if (error()) {
-      <p class="form-error" role="alert">{{ error() }}</p>
-    }
-    <button
-      hlmBtn
-      type="submit"
-      class="action-button"
-      [disabled]="busy() || form.invalid || password === current"
-    >
-      {{ busy() ? 'Salvando...' : 'Alterar senha' }}
-    </button>
+  imports: [
+    HlmAlertImports,
+    HlmCardImports,
+    HlmFieldImports,
+    HlmInputImports,
+    FormsModule,
+    HlmButtonImports,
+  ],
+  template: `<form #form="ngForm" hlmCard class="min-w-0" (ngSubmit)="save(form)">
+    <div hlmCardHeader>
+      <h2 hlmCardTitle>Crie sua nova senha</h2>
+      <p hlmCardDescription>Altere a senha inicial para começar a gerenciar os pets.</p>
+    </div>
+    <div hlmCardContent class="grid gap-3">
+      <div hlmField class="my-4">
+        <label hlmFieldLabel for="current">Senha atual</label
+        ><input
+          hlmInput
+          id="current"
+          name="current"
+          type="password"
+          [(ngModel)]="current"
+          required
+          autocomplete="current-password"
+          [disabled]="busy()"
+        />
+      </div>
+      <div hlmField class="my-4">
+        <label hlmFieldLabel for="new">Nova senha</label
+        ><input
+          hlmInput
+          id="new"
+          name="new"
+          type="password"
+          [(ngModel)]="password"
+          required
+          minlength="8"
+          pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}"
+          autocomplete="new-password"
+          [disabled]="busy()"
+        />
+      </div>
+      <p>Use pelo menos 8 caracteres, com maiúscula, minúscula e número.</p>
+      @if (error()) {
+        <div hlmAlert variant="destructive" class="my-4" role="alert">
+          <p hlmAlertDescription>{{ error() }}</p>
+        </div>
+      }
+      <button
+        hlmBtn
+        type="submit"
+        class="gap-[15px]"
+        [disabled]="busy() || form.invalid || password === current"
+      >
+        {{ busy() ? 'Salvando...' : 'Alterar senha' }}
+      </button>
+    </div>
   </form>`,
 })
 export class PasswordChange {

@@ -1,3 +1,9 @@
+import { HlmCardImports } from '@spartan-ng/helm/card';
+import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';
+import { HlmEmptyImports } from '@spartan-ng/helm/empty';
+import { HlmAlertImports } from '@spartan-ng/helm/alert';
+import { HlmFieldImports } from '@spartan-ng/helm/field';
+import { HlmInputImports } from '@spartan-ng/helm/input';
 import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -11,9 +17,21 @@ import { PetCard } from '../../components/pet-card/pet-card';
 import { Hero } from '../../components/hero/hero';
 
 @Component({
-  imports: [FormsModule, HlmButtonImports, Icon, Pagination, PetCard, Hero],
+  imports: [
+    HlmCardImports,
+    HlmSkeletonImports,
+    HlmEmptyImports,
+    HlmAlertImports,
+    HlmFieldImports,
+    HlmInputImports,
+    FormsModule,
+    HlmButtonImports,
+    Icon,
+    Pagination,
+    PetCard,
+    Hero,
+  ],
   templateUrl: './showcase.html',
-  styleUrl: './showcase.css',
 })
 export class Showcase {
   private readonly pets = inject(PetsService);

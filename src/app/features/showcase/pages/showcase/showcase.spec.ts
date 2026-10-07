@@ -4,6 +4,9 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { Showcase } from './showcase';
 import { API_URL } from '../../../../core/config/api';
 import { PublicPet } from '../../../../core/models/pet';
+import { provideRouter } from '@angular/router';
+import { provideBrowserObservers } from '../../../../shared/testing/browser-observers';
+import { vi } from 'vitest';
 
 const pet: PublicPet = {
   name: 'Thor',
@@ -20,13 +23,17 @@ const pet: PublicPet = {
 describe('Public showcase', () => {
   let http: HttpTestingController;
   beforeEach(() => {
+    provideBrowserObservers();
     TestBed.configureTestingModule({
       imports: [Showcase],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
     });
     http = TestBed.inject(HttpTestingController);
   });
-  afterEach(() => http.verify());
+  afterEach(() => {
+    http.verify();
+    vi.unstubAllGlobals();
+  });
 
   it('requests only available pets and paginates on the server', async () => {
     const fixture = TestBed.createComponent(Showcase);
@@ -50,11 +57,11 @@ describe('Public showcase', () => {
     expect(element.querySelector('[role="alert"]')?.textContent).toContain(
       'Não foi possível carregar',
     );
-    element.querySelector<HTMLButtonElement>('.empty-state button')!.click();
+    element.querySelector<HTMLButtonElement>('[role="alert"] button')!.click();
     http
       .expectOne((req) => req.url === `${API_URL}/pets`)
       .flush({ items: [], pageNumber: 1, totalPages: 0, totalCount: 0 });
     await fixture.whenStable();
-    expect(element.querySelector('.empty-state')?.textContent).toContain('Novas histórias');
+    expect(element.querySelector('[hlmEmpty]')?.textContent).toContain('Novas histórias');
   });
 });

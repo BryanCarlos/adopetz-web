@@ -1,103 +1,137 @@
-<article class="pet-card">
-  <div class="pet-photo" role="group" [attr.aria-label]="'Fotos de ' + pet().name">
-    @if (currentImage() && !brokenImages().includes(currentImage()!)) {
-      <img
-        [src]="currentImage()"
-        [alt]="pet().name + ' — foto ' + (imageIndex() + 1)"
-        loading="lazy"
-        width="600"
-        height="420"
-        (error)="imageFailed()"
-      />
-    } @else {
-      <div class="photo-placeholder"><app-icon /><span>Uma história esperando uma foto</span></div>
-    }
-    <span class="adoption-badge"><span></span> Para adoção</span>
-    @if (images().length > 1) {
-      <button
-        class="photo-arrow prev"
-        [attr.aria-label]="'Foto anterior de ' + pet().name"
-        (click)="move(-1)"
-      >
-        <app-icon name="chevron" />
-      </button>
-      <button
-        class="photo-arrow next"
-        [attr.aria-label]="'Próxima foto de ' + pet().name"
-        (click)="move(1)"
-      >
-        <app-icon name="chevron" />
-      </button>
-      <div class="photo-dots">
+<article hlmCard class="pet-card h-full gap-4 pt-0">
+  @if (images().length) {
+    <hlm-carousel
+      class="pet-photo w-full"
+      [options]="{ loop: true }"
+      [attr.aria-label]="'Fotos de ' + pet().name"
+    >
+      <hlm-carousel-content>
         @for (image of images(); track $index) {
-          <button
-            [class.current]="$index === imageIndex()"
-            [attr.aria-label]="'Ver foto ' + ($index + 1) + ' de ' + pet().name"
-            [attr.aria-pressed]="$index === imageIndex()"
-            (click)="imageIndex.set($index)"
-          >
-            <span></span>
-          </button>
+          <hlm-carousel-item>
+            @if (!brokenImages().includes(image.filePath)) {
+              <img
+                class="aspect-[1.48] w-full object-cover"
+                [src]="image.filePath"
+                [alt]="pet().name + ' — foto ' + ($index + 1)"
+                loading="lazy"
+                width="600"
+                height="420"
+                (error)="imageFailed(image.filePath)"
+              />
+            } @else {
+              <div
+                class="photo-placeholder flex aspect-[1.48] flex-col items-center justify-center gap-3 bg-secondary text-muted-foreground"
+              >
+                <app-icon /><span class="text-xs">Uma história esperando uma foto</span>
+              </div>
+            }
+          </hlm-carousel-item>
         }
-      </div>
-    }
+      </hlm-carousel-content>
+      <span hlmBadge variant="secondary" class="absolute left-3 top-3">Para adoção</span>
+      @if (images().length > 1) {
+        <button
+          hlmCarouselPrevious
+          class="start-3"
+          [attr.aria-label]="'Foto anterior de ' + pet().name"
+        ></button>
+        <button
+          hlmCarouselNext
+          class="end-3"
+          [attr.aria-label]="'Próxima foto de ' + pet().name"
+        ></button>
+        <hlm-carousel-slide-display
+          class="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-card/90 px-3 py-1"
+          label="Foto"
+        />
+      }
+    </hlm-carousel>
+  } @else {
+    <div
+      class="photo-placeholder flex aspect-[1.48] flex-col items-center justify-center gap-3 bg-secondary text-muted-foreground"
+    >
+      <app-icon /><span class="text-xs">Uma história esperando uma foto</span>
+    </div>
+  }
+  <div hlmCardHeader>
+    <div class="flex items-center justify-between gap-2">
+      <h3 hlmCardTitle>{{ pet().name }}</h3>
+      <app-icon name="heart" class="text-brand-cyan" />
+    </div>
+    <p hlmCardDescription class="flex flex-wrap gap-3">
+      <span class="flex items-center gap-1"
+        ><app-icon />{{ pet().breed || 'Raça não informada' }}</span
+      ><span class="flex items-center gap-1"><app-icon name="calendar" />{{ age() }}</span>
+    </p>
   </div>
-  <div class="pet-content">
-    <div class="pet-heading">
-      <h3>{{ pet().name }}</h3>
-      <app-icon name="heart" />
-    </div>
-    <div class="pet-meta">
-      <span><app-icon />{{ pet().breed || 'Raça não informada' }}</span
-      ><span><app-icon name="calendar" />{{ age() }}</span>
-    </div>
-    <p class="pet-about">
+  <div hlmCardContent class="flex flex-1 flex-col gap-4">
+    <p class="text-sm leading-relaxed text-muted-foreground wrap-anywhere">
       {{ pet().about || 'Entre em contato com a ONG para conhecer a história deste pet.' }}
     </p>
     @if (pet().vaccines.length) {
-      <details class="pet-vaccines">
-        <summary>
-          <app-icon name="shield" />
-          <span>Ver vacinas ({{ pet().vaccines.length }})</span>
-          <app-icon name="chevron" class="vaccine-chevron" />
-        </summary>
-        <ul [attr.aria-label]="'Vacinas registradas de ' + pet().name">
-          @for (vaccine of pet().vaccines; track $index) {
-            <li>
-              <strong>{{ vaccine.name }}</strong>
-              @if (vaccine.applicationDate) {
-                <span>Aplicada em {{ vaccine.applicationDate | date: 'dd/MM/yyyy' : 'UTC' }}</span>
-              } @else {
-                <span>Data de aplicação não informada</span>
-              }
-            </li>
-          }
-        </ul>
-      </details>
+      <hlm-collapsible class="flex flex-col gap-2">
+        <button hlmBtn variant="secondary" hlmCollapsibleTrigger class="w-full justify-between">
+          <app-icon name="shield" />Ver vacinas ({{ pet().vaccines.length }})<app-icon
+            name="chevron"
+            class="rotate-90"
+          />
+        </button>
+        <hlm-collapsible-content>
+          <ul
+            class="max-h-60 overflow-y-auto"
+            [attr.aria-label]="'Vacinas registradas de ' + pet().name"
+          >
+            @for (vaccine of pet().vaccines; track $index) {
+              <li class="flex flex-col gap-1 border-b py-3 wrap-anywhere">
+                <strong class="text-sm">{{ vaccine.name }}</strong
+                ><span class="text-xs text-muted-foreground">{{
+                  vaccine.applicationDate
+                    ? 'Aplicada em ' + (vaccine.applicationDate | date: 'dd/MM/yyyy' : 'UTC')
+                    : 'Data de aplicação não informada'
+                }}</span>
+              </li>
+            }
+          </ul>
+        </hlm-collapsible-content>
+      </hlm-collapsible>
     } @else {
-      <span class="vaccine-note"><app-icon name="shield" />Nenhuma vacina registrada</span>
+      <p class="flex items-center gap-2 text-xs text-muted-foreground">
+        <app-icon name="shield" />Nenhuma vacina registrada
+      </p>
     }
-    <brn-popover sideOffset="8" align="center">
-      <button hlmBtn brnPopoverTrigger class="contact-button">
-        <app-icon name="chat" />Contatos<app-icon name="chevron" />
+  </div>
+  <div hlmCardFooter class="mt-auto">
+    <hlm-popover sideOffset="8" align="center" class="w-full">
+      <button hlmBtn hlmPopoverTrigger variant="adoption" class="w-full">
+        <app-icon name="chat" />Contatos<app-icon name="chevron" class="ml-auto" />
       </button>
-      <div *brnPopoverContent="let ctx" class="contact-popover" aria-label="Contatos da ONG">
-        <strong>{{ pet().manager.name || 'ONG responsável' }}</strong>
-        <p>Converse sobre a adoção de {{ pet().name }}.</p>
+      <hlm-popover-content
+        *hlmPopoverPortal="let ctx"
+        class="grid w-72 max-w-[calc(100vw-32px)] gap-3"
+        aria-label="Contatos da ONG"
+      >
+        <strong class="wrap-anywhere">{{ pet().manager.name || 'ONG responsável' }}</strong>
+        <p class="text-sm text-muted-foreground">Converse sobre a adoção de {{ pet().name }}.</p>
         @if (whatsapp(); as url) {
-          <a [href]="url" target="_blank" rel="noopener noreferrer" (click)="ctx.close()"
+          <a
+            hlmBtn
+            variant="outline"
+            [href]="url"
+            target="_blank"
+            rel="noopener noreferrer"
+            (click)="ctx.close()"
             ><app-icon name="chat" />Enviar WhatsApp<app-icon name="arrow"
           /></a>
         }
         @if (email(); as url) {
-          <a [href]="url" (click)="ctx.close()"
+          <a hlmBtn variant="outline" [href]="url" (click)="ctx.close()"
             ><app-icon name="mail" />Enviar e-mail<app-icon name="arrow"
           /></a>
         }
         @if (!whatsapp() && !email()) {
-          <p>Esta ONG ainda não informou seus contatos.</p>
+          <p class="text-sm text-muted-foreground">Esta ONG ainda não informou seus contatos.</p>
         }
-      </div>
-    </brn-popover>
+      </hlm-popover-content>
+    </hlm-popover>
   </div>
 </article>

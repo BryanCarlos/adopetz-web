@@ -5,6 +5,5 @@ import { Icon } from '../../../../shared/components/icon/icon';
   selector: 'app-showcase-hero',
   imports: [HlmButtonImports, Icon],
   templateUrl: './hero.html',
-  styleUrl: './hero.css',
 })
 export class Hero {}

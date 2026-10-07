@@ -1,3 +1,4 @@
+import { provideSpartanHlm } from '@spartan-ng/helm/utils';
 import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
@@ -13,6 +14,7 @@ import { authInterceptor } from './core/interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideSpartanHlm(),
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),

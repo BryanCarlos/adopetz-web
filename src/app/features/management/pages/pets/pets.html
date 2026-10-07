@@ -1,49 +1,65 @@
-<section class="container management-page">
-  <div class="management-heading">
+<section
+  class="container w-[min(1100px,_calc(100%_-_64px))] mx-auto px-0 max-[701px]:w-[calc(100%_-_36px)] management-page min-h-[600px] py-[60px] [&_>_h1]:text-[36px] [&_>_h1]:font-[750] [&_>_h1]:tracking-[-1px] [&_>_h1]:mt-[12px]"
+>
+  <div
+    class="management-heading flex items-center justify-between gap-6 [&_h1]:text-[36px] [&_h1]:font-[750] [&_h1]:tracking-[-1px] [&_h1]:mt-[12px] max-[601px]:items-start max-[601px]:flex-col max-[601px]:[&_h1]:text-[30px]"
+  >
     <div>
-      <span class="eyebrow">ÁREA DA ONG</span>
+      <span class="eyebrow text-primary text-[10px] font-[750] tracking-[1.7px]">ÁREA DA ONG</span>
       <h1>Meus pets</h1>
-      <p class="muted">Cuide das histórias que vão encontrar uma nova família.</p>
+      <p class="muted text-muted-foreground text-[14px] mt-[12px]">
+        Cuide das histórias que vão encontrar uma nova família.
+      </p>
     </div>
     @if (!passwordChange()) {
-      <a hlmBtn routerLink="/ong/novo" class="action-button"><app-icon />Cadastrar pet</a>
+      <a hlmBtn routerLink="/ong/novo" class="gap-[15px]"><app-icon />Cadastrar pet</a>
     }
   </div>
   @if (message()) {
-    <p class="success-message" role="status">{{ message() }}</p>
+    <div hlmAlert class="my-4" role="status">
+      <p hlmAlertDescription>{{ message() }}</p>
+    </div>
   }
   @if (passwordChange()) {
     <app-password-change (changed)="passwordChanged()" />
   } @else {
     @if (error()) {
-      <div class="error-message" role="alert">
-        <p>{{ error() }}</p>
+      <div hlmAlert variant="destructive" class="my-4" role="alert">
+        <p hlmAlertDescription>{{ error() }}</p>
         @if (!result()) {
           <button hlmBtn variant="outline" (click)="load(1)">Tentar novamente</button>
         }
       </div>
     }
     @if (busy()) {
-      <p class="management-state" role="status">Carregando seus pets...</p>
+      <p class="flex items-center gap-3 py-10 text-muted-foreground" role="status">
+        <hlm-spinner aria-hidden="true" />Carregando seus pets...
+      </p>
     } @else if (result()?.items?.length) {
-      <p class="list-count">
+      <p class="list-count text-[13px] text-muted-foreground m-[28px_0_18px]">
         {{ result()!.totalCount }}
         {{ result()!.totalCount === 1 ? 'pet cadastrado' : 'pets cadastrados' }}
       </p>
-      <div class="manager-grid">
+      <div
+        class="manager-grid grid grid-cols-3 gap-6 max-[901px]:grid-cols-2 max-[601px]:grid-cols-1"
+      >
         @for (pet of result()!.items; track pet.id) {
-          <article class="manager-card">
-            <div class="manager-photo">
+          <article hlmCard class="pt-0">
+            <div
+              class="manager-photo relative h-[190px] grid place-items-center bg-secondary text-brand-cyan text-[45px] [&_img]:absolute [&_img]:[inset:0] [&_img]:w-full [&_img]:h-full [&_img]:object-cover"
+            >
               <app-icon />
               @if (imageUrl(pet); as url) {
                 <img [src]="url" [alt]="pet.name" loading="lazy" (error)="imageFailed($event)" />
               }
-              <span class="status-tag" [class.adopted]="pet.isAdopted">{{
+              <span hlmBadge variant="secondary" [class.adopted]="pet.isAdopted">{{
                 pet.isAdopted ? 'Adotado' : 'Disponível'
               }}</span>
             </div>
-            <div class="manager-content">
-              <h2>{{ pet.name }}</h2>
+            <div hlmCardContent class="flex flex-1 flex-col gap-3">
+              <div hlmCardHeader class="px-0">
+                <h2 hlmCardTitle>{{ pet.name }}</h2>
+              </div>
               <p>
                 {{ pet.breed || 'Raça não informada' }} ·
                 {{
@@ -54,11 +70,17 @@
                       : pet.ageInYears + ' ano(s)'
                 }}
               </p>
-              <p class="manager-about">{{ pet.about }}</p>
-              <span class="manager-details"
+              <p
+                class="manager-about [display:-webkit-box] [-webkit-line-clamp:3] [-webkit-box-orient:vertical] overflow-hidden min-h-[66px]"
+              >
+                {{ pet.about }}
+              </p>
+              <span class="manager-details block text-[11px] text-primary m-[16px_0]"
                 >{{ pet.images.length }} foto(s) · {{ pet.vaccines.length }} vacina(s)</span
               >
-              <div class="manager-actions">
+              <div
+                class="manager-actions flex flex-col gap-[10px] [&_>_a]:w-full [&_>_a]:min-h-[40px] [&_>_a]:whitespace-normal [&_>_a]:text-center [&_>_button]:w-full [&_>_button]:min-h-[40px] [&_>_button]:whitespace-normal [&_>_button]:text-center [&_>_a]:justify-between [&_>_a[aria-disabled]]:[pointer-events:none] [&_>_a[aria-disabled]]:opacity-[0.5]"
+              >
                 <a
                   hlmBtn
                   variant="outline"
@@ -97,11 +119,15 @@
         (pageChange)="load($event)"
       />
     } @else if (!error()) {
-      <div class="management-empty">
-        <app-icon name="heart" />
-        <h2>A primeira história começa aqui.</h2>
-        <p>Cadastre um pet para apresentá-lo na vitrine de adoção.</p>
-        <a hlmBtn routerLink="/ong/novo" class="action-button">Cadastrar primeiro pet</a>
+      <div hlmEmpty class="my-6 border">
+        <div hlmEmptyHeader>
+          <div hlmEmptyMedia variant="icon"><app-icon name="heart" /></div>
+          <h2 hlmEmptyTitle>A primeira história começa aqui.</h2>
+          <p hlmEmptyDescription>Cadastre um pet para apresentá-lo na vitrine de adoção.</p>
+        </div>
+        <div hlmEmptyContent>
+          <a hlmBtn routerLink="/ong/novo" class="gap-[15px]">Cadastrar primeiro pet</a>
+        </div>
       </div>
     }
   }

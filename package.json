@@ -18,9 +18,13 @@
     "@angular/forms": "^22.2.0",
     "@angular/platform-browser": "^22.2.0",
     "@angular/router": "^22.2.0",
+    "@ng-icons/core": "^32.2.0",
+    "@ng-icons/lucide": "^32.2.0",
     "@spartan-ng/brain": "^1.5.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "embla-carousel": ">=8.0.0 <9.0.0",
+    "embla-carousel-angular": "^22.0.0",
     "rxjs": "~7.8.0",
     "tailwind-merge": "^3.5.0",
     "tslib": "^2.3.0"

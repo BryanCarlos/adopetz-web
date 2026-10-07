@@ -1,3 +1,8 @@
+import { HlmCardImports } from '@spartan-ng/helm/card';
+import { HlmEmptyImports } from '@spartan-ng/helm/empty';
+import { HlmSpinnerImports } from '@spartan-ng/helm/spinner';
+import { HlmAlertImports } from '@spartan-ng/helm/alert';
+import { HlmBadgeImports } from '@spartan-ng/helm/badge';
 import { Component, inject, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
@@ -11,9 +16,20 @@ import { Icon } from '../../../../shared/components/icon/icon';
 import { PasswordChange } from '../../../auth/components/password-change/password-change';
 
 @Component({
-  imports: [RouterLink, HlmButtonImports, Pagination, ConfirmDelete, Icon, PasswordChange],
+  imports: [
+    HlmCardImports,
+    HlmEmptyImports,
+    HlmSpinnerImports,
+    HlmAlertImports,
+    HlmBadgeImports,
+    RouterLink,
+    HlmButtonImports,
+    Pagination,
+    ConfirmDelete,
+    Icon,
+    PasswordChange,
+  ],
   templateUrl: './pets.html',
-  styleUrl: './pets.css',
 })
 export class MyPets {
   private readonly pets = inject(PetsService);

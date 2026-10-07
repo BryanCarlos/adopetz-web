@@ -1,3 +1,10 @@
+import { HlmSpinnerImports } from '@spartan-ng/helm/spinner';
+import { HlmAlertImports } from '@spartan-ng/helm/alert';
+import { HlmCardImports } from '@spartan-ng/helm/card';
+import { HlmCheckboxImports } from '@spartan-ng/helm/checkbox';
+import { HlmFieldImports } from '@spartan-ng/helm/field';
+import { HlmTextareaImports } from '@spartan-ng/helm/textarea';
+import { HlmInputImports } from '@spartan-ng/helm/input';
 import { Component, DestroyRef, HostListener, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -33,9 +40,22 @@ interface PendingPhoto {
 }
 
 @Component({
-  imports: [ReactiveFormsModule, RouterLink, DatePipe, HlmButtonImports, ConfirmDelete, Icon],
+  imports: [
+    HlmSpinnerImports,
+    HlmAlertImports,
+    HlmCardImports,
+    HlmCheckboxImports,
+    HlmFieldImports,
+    HlmTextareaImports,
+    HlmInputImports,
+    ReactiveFormsModule,
+    RouterLink,
+    DatePipe,
+    HlmButtonImports,
+    ConfirmDelete,
+    Icon,
+  ],
   templateUrl: './pet-editor.html',
-  styleUrl: './pet-editor.css',
 })
 export class PetEditor {
   private readonly fb = inject(FormBuilder);
