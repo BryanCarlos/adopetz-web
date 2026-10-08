@@ -86,14 +86,30 @@
               </div>
               <div>
                 <div hlmField class="my-0">
-                  <label hlmFieldLabel for="pet-rescue">Data do resgate</label
-                  ><input
-                    hlmInput
-                    id="pet-rescue"
-                    type="date"
+                  <label hlmFieldLabel for="pet-rescue">Data do resgate</label>
+                  <hlm-date-picker
+                    #rescuePicker
                     formControlName="rescueDate"
-                    [max]="today"
-                  />
+                    [maxDate]="today"
+                    [disabled]="saving()"
+                    captionLayout="dropdown"
+                    align="start"
+                  >
+                    <hlm-date-picker-trigger buttonId="pet-rescue" class="w-full"
+                      >Selecione uma data</hlm-date-picker-trigger
+                    >
+                    <div hlmDatePickerFooter class="flex justify-end p-2">
+                      <button
+                        hlmBtn
+                        type="button"
+                        variant="ghost"
+                        [disabled]="saving()"
+                        (click)="rescuePicker.reset(); rescuePicker.close()"
+                      >
+                        Limpar data
+                      </button>
+                    </div>
+                  </hlm-date-picker>
                   @if (form.controls.rescueDate.touched && form.controls.rescueDate.invalid) {
                     <hlm-field-error forceShow>A data não pode estar no futuro.</hlm-field-error>
                   }
@@ -277,14 +293,30 @@
                   />
                 </div>
                 <div hlmField class="my-0">
-                  <label hlmFieldLabel for="vaccine-date">Data da aplicação</label
-                  ><input
-                    hlmInput
-                    id="vaccine-date"
-                    type="date"
+                  <label hlmFieldLabel for="vaccine-date">Data da aplicação</label>
+                  <hlm-date-picker
+                    #vaccinePicker
                     formControlName="applicationDate"
-                    [max]="today"
-                  />
+                    [maxDate]="today"
+                    [disabled]="saving()"
+                    captionLayout="dropdown"
+                    align="start"
+                  >
+                    <hlm-date-picker-trigger buttonId="vaccine-date" class="w-full"
+                      >Selecione uma data</hlm-date-picker-trigger
+                    >
+                    <div hlmDatePickerFooter class="flex justify-end p-2">
+                      <button
+                        hlmBtn
+                        type="button"
+                        variant="ghost"
+                        [disabled]="saving()"
+                        (click)="vaccinePicker.reset(); vaccinePicker.close()"
+                      >
+                        Limpar data
+                      </button>
+                    </div>
+                  </hlm-date-picker>
                   @if (
                     vaccineForm.controls.applicationDate.touched &&
                     vaccineForm.controls.applicationDate.invalid

@@ -31,7 +31,10 @@
       "@spartan-ng/helm/spinner": ["./libs/ui/spinner/src/index.ts"],
       "@spartan-ng/helm/empty": ["./libs/ui/empty/src/index.ts"],
       "@spartan-ng/helm/carousel": ["./libs/ui/carousel/src/index.ts"],
-      "@spartan-ng/helm/skeleton": ["./libs/ui/skeleton/src/index.ts"]
+      "@spartan-ng/helm/skeleton": ["./libs/ui/skeleton/src/index.ts"],
+      "@spartan-ng/helm/date-picker": ["./libs/ui/date-picker/src/index.ts"],
+      "@spartan-ng/helm/calendar": ["./libs/ui/calendar/src/index.ts"],
+      "@spartan-ng/helm/input-group": ["./libs/ui/input-group/src/index.ts"]
     }
   },
   "angularCompilerOptions": {

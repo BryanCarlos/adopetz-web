@@ -5,6 +5,12 @@ import { HlmCheckboxImports } from '@spartan-ng/helm/checkbox';
 import { HlmFieldImports } from '@spartan-ng/helm/field';
 import { HlmTextareaImports } from '@spartan-ng/helm/textarea';
 import { HlmInputImports } from '@spartan-ng/helm/input';
+import {
+  HlmDatePicker,
+  HlmDatePickerTrigger,
+  provideHlmDatePickerConfig,
+} from '@spartan-ng/helm/date-picker';
+import { provideBrnCalendarI18n } from '@spartan-ng/brain/calendar';
 import { Component, DestroyRef, HostListener, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,6 +21,7 @@ import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { ManagerPet, PetDetails, VaccineDetails } from '../../../../core/models/pet';
 import { PetsService } from '../../../../core/services/pets.service';
 import { apiError } from '../../../../core/utils/api-error';
+import { dateFromApi, dateToApi, formatCalendarDate } from '../../../../core/utils/calendar-date';
 import { ConfirmDelete } from '../../../../shared/components/confirm-delete/confirm-delete';
 import { Icon } from '../../../../shared/components/icon/icon';
 
@@ -23,7 +30,9 @@ export function localToday() {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 }
 export function pastDate(control: AbstractControl) {
-  return control.value && control.value > localToday() ? { futureDate: true } : null;
+  const day =
+    control.value instanceof Date ? dateToApi(control.value)?.slice(0, 10) : control.value;
+  return day && day > localToday() ? { futureDate: true } : null;
 }
 export function integerAge(control: AbstractControl) {
   return control.value != null && !Number.isInteger(control.value) ? { integer: true } : null;
@@ -48,12 +57,52 @@ interface PendingPhoto {
     HlmFieldImports,
     HlmTextareaImports,
     HlmInputImports,
+    HlmDatePicker,
+    HlmDatePickerTrigger,
     ReactiveFormsModule,
     RouterLink,
     DatePipe,
     HlmButtonImports,
     ConfirmDelete,
     Icon,
+  ],
+  providers: [
+    provideHlmDatePickerConfig<Date>({ formatDate: formatCalendarDate, autoCloseOnSelect: true }),
+    provideBrnCalendarI18n({
+      formatWeekdayName: (day) => ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][day],
+      labelWeekday: (day) =>
+        [
+          'Domingo',
+          'Segunda-feira',
+          'Terça-feira',
+          'Quarta-feira',
+          'Quinta-feira',
+          'Sexta-feira',
+          'Sábado',
+        ][day],
+      formatMonth: (month) =>
+        new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(new Date(2020, month, 1)),
+      formatHeader: (month, year) =>
+        new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(
+          new Date(year, month, 1),
+        ),
+      months: () => [
+        'janeiro',
+        'fevereiro',
+        'março',
+        'abril',
+        'maio',
+        'junho',
+        'julho',
+        'agosto',
+        'setembro',
+        'outubro',
+        'novembro',
+        'dezembro',
+      ],
+      labelPrevious: () => 'Mês anterior',
+      labelNext: () => 'Próximo mês',
+    }),
   ],
   templateUrl: './pet-editor.html',
 })
@@ -72,19 +121,19 @@ export class PetEditor {
   protected readonly pendingPhotos = signal<PendingPhoto[]>([]);
   protected readonly pendingVaccines = signal<VaccineDetails[]>([]);
   protected readonly editingVaccine = signal<string | null>(null);
-  protected readonly today = localToday();
+  protected readonly today = new Date();
   private saved = false;
   protected readonly form = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(100)]],
     breed: ['', Validators.maxLength(100)],
     about: ['', [Validators.required, Validators.maxLength(500)]],
     ageInYears: [null as number | null, [Validators.min(0), Validators.max(99), integerAge]],
-    rescueDate: ['', pastDate],
+    rescueDate: [null as Date | null, pastDate],
     adopted: [false],
   });
   protected readonly vaccineForm = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(100)]],
-    applicationDate: ['', pastDate],
+    applicationDate: this.fb.control<Date | null>(null, pastDate),
   });
 
   constructor() {
@@ -124,7 +173,7 @@ export class PetEditor {
               breed: pet.breed ?? '',
               about: pet.about,
               ageInYears: pet.ageInYears,
-              rescueDate: pet.rescueDate?.slice(0, 10) ?? '',
+              rescueDate: dateFromApi(pet.rescueDate),
               adopted: pet.isAdopted,
             });
           }
@@ -151,7 +200,7 @@ export class PetEditor {
       breed: value.breed?.trim() || null,
       about: value.about!.trim(),
       ageInYears: value.ageInYears,
-      rescueDate: value.rescueDate ? `${value.rescueDate}T00:00:00Z` : null,
+      rescueDate: dateToApi(value.rescueDate),
       adopted: value.adopted ?? false,
     };
     this.saving.set(true);
@@ -249,7 +298,7 @@ export class PetEditor {
     this.editingVaccine.set(vaccine.id);
     this.vaccineForm.reset({
       name: vaccine.name,
-      applicationDate: vaccine.applicationDate?.slice(0, 10) ?? '',
+      applicationDate: dateFromApi(vaccine.applicationDate),
     });
   }
   protected cancelVaccine() {
@@ -266,7 +315,7 @@ export class PetEditor {
     }
     const vaccine: VaccineDetails = {
       name: value.name.trim(),
-      applicationDate: value.applicationDate ? `${value.applicationDate}T00:00:00Z` : null,
+      applicationDate: dateToApi(value.applicationDate),
     };
     if (!this.id) {
       this.pendingVaccines.update((vaccines) => [...vaccines, vaccine]);
