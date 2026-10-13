@@ -1,0 +1,56 @@
+<section class="hero bg-muted overflow-hidden border-b border-border" aria-labelledby="hero-title">
+  <div
+    class="container w-[min(1100px,_calc(100%_-_64px))] mx-auto px-0 max-[701px]:w-[calc(100%_-_36px)] hero-layout grid grid-cols-[1.1fr_1fr] items-center gap-[40px] min-h-[540px] pt-[46px] pb-[46px] max-[901px]:gap-5 max-[901px]:min-h-[470px] max-[601px]:grid-cols-1 max-[601px]:text-center max-[601px]:gap-[32px] max-[601px]:pt-[36px] max-[601px]:pb-[30px]"
+  >
+    <div
+      class="hero-copy [&_h1]:text-[clamp(36px,_4.3vw,_60px)] [&_h1]:leading-[1.12] [&_h1]:tracking-[-2.8px] [&_h1]:text-foreground [&_h1]:font-[800] [&_h1]:m-[20px_0] [&_h1_span]:text-primary [&_>_p]:max-w-[395px] [&_>_p]:text-[15px] [&_>_p]:leading-[1.85] [&_>_p]:text-muted-foreground [&_>_p]:mb-[27px] max-[901px]:[&_h1]:text-[44px] max-[601px]:[&_.eyebrow]:justify-center max-[601px]:[&_h1]:text-[42px] max-[601px]:[&_h1]:tracking-[-2px] max-[601px]:[&_>_p]:text-[14px] max-[601px]:[&_>_p]:ml-auto max-[601px]:[&_>_p]:mr-auto"
+    >
+      <span
+        class="eyebrow text-primary text-[10px] font-[750] tracking-[1.7px] flex items-center gap-[7px] text-primary text-[10px] tracking-[1.7px] font-[750]"
+        ><app-icon name="heart" /> UM NOVO COMEÇO, JUNTOS</span
+      >
+      <h1 id="hero-title">Um amigo.<br />Um lar.<br /><span>Uma vida de amor.</span></h1>
+      <p>
+        O próximo capítulo da sua vida pode ter quatro patas. Conheça os pets que estão esperando
+        uma família como a sua.
+      </p>
+      <a hlmBtn href="#pets" variant="adoption" class="gap-[18px]"
+        >Encontre seu novo amigo<app-icon name="arrow"
+      /></a>
+      <span
+        class="hero-note flex items-center gap-[7px] text-[11px] text-muted-foreground mt-[20px] max-[601px]:justify-center"
+        ><app-icon name="shield" /> Adoção responsável. Amor para sempre.</span
+      >
+    </div>
+    <div
+      class="hero-art relative max-w-[420px] w-full [justify-self:end] p-[10px_20px] max-[901px]:pr-[10px] max-[601px]:[justify-self:center] max-[601px]:max-w-[310px]"
+      aria-hidden="true"
+    >
+      <div
+        class="photo-shape h-[390px] overflow-hidden rounded-[46%_46%_40%_40%] border-[10px] border-adoption [transform:rotate(5deg)] bg-adoption [&_img]:w-full [&_img]:h-full [&_img]:object-cover [&_img]:[object-position:center_38%] [&_img]:[transform:rotate(-5deg)_scale(1.12)] max-[901px]:h-[330px] max-[601px]:h-[280px]"
+      >
+        <img
+          src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=900&q=85"
+          alt=""
+          width="900"
+          height="1000"
+          fetchpriority="high"
+        />
+      </div>
+      <span
+        class="floating-heart absolute [top:27px] [left:-6px] bg-card text-primary w-[68px] h-[68px] rounded-[22px] grid place-items-center text-[26px] [transform:rotate(-14deg)] shadow-sm max-[601px]:w-[52px] max-[601px]:h-[52px] max-[601px]:text-[21px]"
+        ><app-icon name="heart" /></span
+      ><span
+        class="art-paw absolute [right:-13px] [top:35px] text-[55px] text-brand-cyan [transform:rotate(20deg)] max-[901px]:[right:0] max-[601px]:text-[38px]"
+        ><app-icon
+      /></span>
+      <div
+        class="love-note absolute [bottom:16px] [left:0] flex items-center gap-3 p-[15px_20px] bg-card border border-border rounded-[14px] shadow-sm text-muted-foreground text-[11px] leading-[1.6] [transform:rotate(-4deg)] [&_>_app-icon]:text-[24px] [&_>_app-icon]:text-adoption [&_strong]:text-[12px] [&_strong]:text-foreground max-[601px]:text-[10px] max-[601px]:p-[12px_15px] max-[601px]:[&_strong]:text-[11px]"
+      >
+        <app-icon name="heart" /><span
+          >Um pequeno gesto.<br /><strong>Uma vida inteira de amor.</strong></span
+        >
+      </div>
+    </div>
+  </div>
+</section>

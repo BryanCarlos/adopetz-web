@@ -1,0 +1,131 @@
+<app-showcase-hero />
+<section
+  class="showcase pt-[62px] pb-[65px] [scroll-margin-top:24px] max-[601px]:pt-[38px] max-[601px]:pb-[38px] container w-[min(1100px,_calc(100%_-_64px))] mx-auto px-0 max-[701px]:w-[calc(100%_-_36px)]"
+  id="pets"
+  aria-labelledby="pets-title"
+>
+  <div
+    class="section-heading [&_h2]:text-[30px] [&_h2]:font-[750] [&_h2]:tracking-[-1px] [&_h2]:leading-[1.3] [&_h2]:m-[12px_0] [&_h2]:text-foreground [&_h2_span]:text-adoption [&_p]:text-[14px] [&_p]:text-muted-foreground max-[601px]:[&_h2]:text-[27px]"
+  >
+    <div>
+      <span class="eyebrow text-primary text-[10px] font-[750] tracking-[1.7px]"
+        >ENCONTRE SUA NOVA COMPANHIA</span
+      >
+      <h2 id="pets-title">Prontos para fazer parte da sua família<span>.</span></h2>
+      <p>Cada pet tem uma história. Que tal fazer parte dela?</p>
+    </div>
+  </div>
+  <div
+    class="listing-toolbar flex items-center justify-between gap-5 m-[28px_0_24px] pb-[21px] border-b border-border max-[601px]:[align-items:stretch] max-[601px]:flex-col max-[601px]:gap-[14px] max-[601px]:mt-[22px]"
+  >
+    <span
+      class="result-count text-[12px] text-muted-foreground [&_strong]:text-foreground"
+      aria-live="polite"
+    >
+      @if (result(); as data) {
+        <strong>{{ data.totalCount }}</strong>
+        {{ data.totalCount === 1 ? 'pet esperando um lar' : 'pets esperando um lar' }}
+      } @else {
+        Pets disponíveis para adoção
+      }
+    </span>
+    <form class="flex items-center gap-2" (ngSubmit)="search()">
+      <app-icon name="search" />
+      <div hlmField class="flex-1">
+        <label hlmFieldLabel class="sr-only" for="pet-search"
+          >Buscar por nome, raça ou descrição</label
+        ><input
+          hlmInput
+          id="pet-search"
+          name="search"
+          [(ngModel)]="searchTerm"
+          placeholder="Busque seu novo amigo"
+          maxlength="100"
+        />
+      </div>
+      <button hlmBtn variant="ghost" type="submit" aria-label="Buscar pets">
+        <app-icon name="arrow" />
+      </button>
+    </form>
+  </div>
+  <div [attr.aria-busy]="loading()">
+    @if (loading()) {
+      <p class="sr-only absolute" role="status">Carregando pets...</p>
+      <div
+        class="pet-grid grid grid-cols-3 gap-6 max-[901px]:grid-cols-2 max-[601px]:grid-cols-1 max-[601px]:gap-5"
+        aria-hidden="true"
+      >
+        @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+          <div hlmCard>
+            <div hlmSkeleton class="aspect-[1.48]"></div>
+            <div hlmCardContent class="grid gap-3">
+              <div hlmSkeleton class="h-5"></div>
+              <div hlmSkeleton class="h-4"></div>
+              <div hlmSkeleton class="h-4 w-1/2"></div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (error()) {
+      <div hlmEmpty class="my-6 border" role="alert">
+        <div hlmEmptyHeader>
+          <div hlmEmptyMedia variant="icon"><app-icon /></div>
+          <h3 hlmEmptyTitle>Ops, nossos amigos ainda não apareceram.</h3>
+          <p hlmAlertDescription>{{ error() }}</p>
+        </div>
+        <div hlmEmptyContent>
+          <button hlmBtn class="gap-[15px]" (click)="load(1)">Tentar novamente</button>
+        </div>
+      </div>
+    } @else if (result()?.items?.length) {
+      <div
+        class="pet-grid grid grid-cols-3 gap-6 max-[901px]:grid-cols-2 max-[601px]:grid-cols-1 max-[601px]:gap-5"
+      >
+        @for (pet of result()!.items; track $index) {
+          <app-pet-card [pet]="pet" />
+        }
+      </div>
+      <app-pagination
+        [page]="result()!.pageNumber"
+        [totalPages]="result()!.totalPages"
+        [disabled]="loading()"
+        (pageChange)="load($event)"
+      />
+    } @else {
+      <div hlmEmpty class="my-6 border" role="status">
+        <div hlmEmptyHeader>
+          <div hlmEmptyMedia variant="icon"><app-icon name="heart" /></div>
+          <h3 hlmEmptyTitle>
+            {{
+              searchTerm ? 'Nenhum pet encontrado por aqui.' : 'Novas histórias chegarão em breve.'
+            }}
+          </h3>
+          <p hlmEmptyDescription>
+            {{
+              searchTerm
+                ? 'Tente buscar por outro nome, raça ou característica.'
+                : 'Assim que a ONG cadastrar os pets disponíveis, eles aparecerão aqui.'
+            }}
+          </p>
+        </div>
+      </div>
+    }
+  </div>
+  <div
+    class="adoption-note flex items-center gap-5 rounded-[18px] bg-secondary p-[27px_30px] mt-[48px] [&_h3]:text-[17px] [&_h3]:font-bold [&_h3]:text-foreground [&_h3]:mb-[5px] [&_p]:text-[12px] [&_p]:leading-[1.7] [&_p]:text-muted-foreground max-[601px]:p-[23px_19px] max-[601px]:gap-[14px] max-[601px]:items-start max-[601px]:[&_h3]:text-[16px]"
+  >
+    <span
+      class="note-icon bg-card grid place-items-center text-primary text-[24px] size-14 shrink-0 rounded-[50%] max-[601px]:w-[39px] max-[601px]:h-[39px] max-[601px]:text-[20px]"
+      ><app-icon name="heart"
+    /></span>
+    <div>
+      <h3>Adotar é abrir espaço para o amor.</h3>
+      <p>
+        Converse com a ONG, conheça o pet e dê o primeiro passo para uma amizade para a vida toda.
+      </p>
+    </div>
+    <app-icon
+      class="note-paw ml-auto text-brand-cyan text-[38px] [transform:rotate(-15deg)] max-[601px]:hidden"
+    />
+  </div>
+</section>

@@ -1,0 +1,358 @@
+<section
+  class="container w-[min(1100px,_calc(100%_-_64px))] mx-auto px-0 max-[701px]:w-[calc(100%_-_36px)] editor-page py-[44px_65px] min-h-[650px] [&_>_h1]:text-[36px] [&_>_h1]:font-[750] [&_>_h1]:tracking-[-1px] [&_>_h1]:mt-[12px] max-[421px]:[&_>_h1]:text-[30px]"
+>
+  <a routerLink="/ong" class="back-link block text-primary text-[13px] font-semibold mb-[30px]"
+    >← Voltar para meus pets</a
+  >
+  <span class="eyebrow text-primary text-[10px] font-[750] tracking-[1.7px]">ÁREA DA ONG</span>
+  <h1>{{ id ? 'Editar pet' : 'Uma nova história' }}</h1>
+  <p class="muted text-muted-foreground text-[14px] mt-[12px]">
+    {{
+      id
+        ? 'Mantenha as informações deste amigo atualizadas.'
+        : 'Apresente um novo amigo para quem quer adotar.'
+    }}
+  </p>
+  @if (message()) {
+    <div hlmAlert class="my-0" role="status">
+      <p hlmAlertDescription>{{ message() }}</p>
+    </div>
+  }
+  @if (error()) {
+    <div hlmAlert variant="destructive" class="my-0" role="alert">
+      <p hlmAlertDescription>{{ error() }}</p>
+    </div>
+  }
+  @if (loading()) {
+    <p class="flex items-center gap-3 py-10 text-muted-foreground" role="status">
+      <hlm-spinner aria-hidden="true" />Carregando cadastro...
+    </p>
+  } @else if (id && !pet()) {
+    <button hlmBtn variant="outline" (click)="load(true)">Tentar novamente</button>
+  } @else {
+    <div
+      class="editor-layout grid grid-cols-[1.15fr_1fr] gap-6 items-start mt-[30px] max-[801px]:grid-cols-1"
+    >
+      <form [formGroup]="form" (ngSubmit)="save()" hlmCard class="min-w-0">
+        <div hlmCardHeader>
+          <h2 hlmCardTitle>Sobre o pet</h2>
+          <p hlmCardDescription>Nome e descrição são obrigatórios.</p>
+        </div>
+        <div hlmCardContent>
+          <fieldset hlmFieldSet [disabled]="saving()">
+            <div hlmField class="my-0">
+              <label hlmFieldLabel for="pet-name">Nome *</label
+              ><input
+                hlmInput
+                id="pet-name"
+                formControlName="name"
+                maxlength="100"
+                autocomplete="off"
+                placeholder="Como ele se chama?"
+              />
+              @if (form.controls.name.touched && form.controls.name.invalid) {
+                <hlm-field-error forceShow>Informe um nome com até 100 caracteres.</hlm-field-error>
+              }
+            </div>
+            <div hlmField class="my-0">
+              <label hlmFieldLabel for="pet-breed">Raça</label
+              ><input
+                hlmInput
+                id="pet-breed"
+                formControlName="breed"
+                maxlength="100"
+                placeholder="Ex.: SRD"
+              />
+            </div>
+            <div class="field-row grid grid-cols-2 gap-4 max-[421px]:grid-cols-1">
+              <div>
+                <div hlmField class="my-0">
+                  <label hlmFieldLabel for="pet-age">Idade em anos</label
+                  ><input
+                    hlmInput
+                    id="pet-age"
+                    type="number"
+                    formControlName="ageInYears"
+                    min="0"
+                    max="99"
+                    step="1"
+                    placeholder="Não informada"
+                  />
+                  <p hlmFieldDescription class="mt-2">Use 0 para menos de um ano.</p>
+                  @if (form.controls.ageInYears.touched && form.controls.ageInYears.invalid) {
+                    <hlm-field-error forceShow>Use um inteiro de 0 a 99.</hlm-field-error>
+                  }
+                </div>
+              </div>
+              <div>
+                <div hlmField class="my-0">
+                  <label hlmFieldLabel for="pet-rescue">Data do resgate</label>
+                  <hlm-date-picker
+                    #rescuePicker
+                    formControlName="rescueDate"
+                    [maxDate]="today"
+                    [disabled]="saving()"
+                    captionLayout="dropdown"
+                    align="start"
+                  >
+                    <hlm-date-picker-trigger buttonId="pet-rescue" class="w-full"
+                      >Selecione uma data</hlm-date-picker-trigger
+                    >
+                    <div hlmDatePickerFooter class="flex justify-end p-2">
+                      <button
+                        hlmBtn
+                        type="button"
+                        variant="ghost"
+                        [disabled]="saving()"
+                        (click)="rescuePicker.reset(); rescuePicker.close()"
+                      >
+                        Limpar data
+                      </button>
+                    </div>
+                  </hlm-date-picker>
+                  @if (form.controls.rescueDate.touched && form.controls.rescueDate.invalid) {
+                    <hlm-field-error forceShow>A data não pode estar no futuro.</hlm-field-error>
+                  }
+                </div>
+              </div>
+            </div>
+            <div hlmField class="my-0">
+              <label hlmFieldLabel for="pet-about">Descrição *</label
+              ><textarea
+                hlmTextarea
+                id="pet-about"
+                formControlName="about"
+                maxlength="500"
+                rows="5"
+                placeholder="Conte a história, o temperamento e os cuidados deste pet."
+              ></textarea>
+              <p hlmFieldDescription class="mt-2">
+                {{ form.controls.about.value?.length ?? 0 }}/500 caracteres
+              </p>
+              @if (form.controls.about.touched && form.controls.about.invalid) {
+                <hlm-field-error forceShow
+                  >Informe uma descrição com até 500 caracteres.</hlm-field-error
+                >
+              }
+            </div>
+            @if (id) {
+              <div hlmField orientation="horizontal" class="mt-5">
+                <hlm-checkbox
+                  inputId="pet-adopted"
+                  formControlName="adopted"
+                  [disabled]="saving()"
+                /><label hlmFieldLabel for="pet-adopted">Este pet já foi adotado</label>
+              </div>
+              <p hlmFieldDescription class="mt-2">
+                Pets adotados deixam de aparecer na vitrine pública.
+              </p>
+            }
+            <button hlmBtn type="submit" class="gap-[15px] mt-[26px] w-full" [disabled]="saving()">
+              {{ saving() ? 'Salvando...' : id ? 'Salvar dados do pet' : 'Cadastrar pet'
+              }}<app-icon name="arrow" />
+            </button>
+          </fieldset>
+        </div>
+      </form>
+      <div class="editor-extras flex flex-col gap-6">
+        <section hlmCard class="min-w-0" aria-labelledby="photos-title">
+          <div hlmCardHeader>
+            <h2 hlmCardTitle id="photos-title" class="flex justify-between gap-2">
+              Fotos <span>{{ (pet()?.images?.length ?? 0) + pendingPhotos().length }}/4</span>
+            </h2>
+            <p hlmCardDescription>JPEG, PNG, WebP ou AVIF. Até 10 MB por foto.</p>
+          </div>
+          <div hlmCardContent>
+            <div class="photo-grid grid grid-cols-2 gap-[14px] max-[421px]:gap-[10px]">
+              @for (image of pet()?.images ?? []; track image.id) {
+                <div
+                  class="photo-item min-w-0 flex items-start flex-col gap-[8px] [&_img]:w-full [&_img]:h-[120px] [&_img]:object-cover [&_img]:rounded-[10px] [&_img]:bg-secondary [&_button]:text-[11px]"
+                >
+                  <img [src]="safeImage(image.filePath)" [alt]="pet()!.name" /><app-confirm-delete
+                    label="Excluir foto"
+                    title="Excluir esta foto?"
+                    description="A foto será removida permanentemente do cadastro e da vitrine."
+                    [disabled]="saving()"
+                    (confirmed)="deletePhoto(image.id)"
+                  />
+                </div>
+              }
+              @for (photo of pendingPhotos(); track photo.url) {
+                <div
+                  class="photo-item min-w-0 flex items-start flex-col gap-[8px] [&_img]:w-full [&_img]:h-[120px] [&_img]:object-cover [&_img]:rounded-[10px] [&_img]:bg-secondary [&_button]:text-[11px]"
+                >
+                  <img [src]="photo.url" [alt]="'Prévia de ' + photo.file.name" /><button
+                    hlmBtn
+                    variant="outline"
+                    [disabled]="saving()"
+                    (click)="removePendingPhoto(photo)"
+                  >
+                    Remover seleção
+                  </button>
+                </div>
+              }
+            </div>
+            <label
+              hlmFieldLabel
+              class="upload-label flex gap-[9px] items-center text-[13px] font-semibold text-primary m-[22px_0_10px]"
+              for="pet-images"
+              ><app-icon />Escolher fotos</label
+            ><input
+              hlmInput
+              id="pet-images"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/avif"
+              multiple
+              (change)="selectPhotos($event)"
+              [disabled]="saving() || (pet()?.images?.length ?? 0) + pendingPhotos().length >= 4"
+            />
+            @if (id && pendingPhotos().length) {
+              <button hlmBtn class="gap-[15px]" [disabled]="saving()" (click)="uploadPhotos()">
+                Enviar fotos selecionadas
+              </button>
+            }
+            <p hlmFieldDescription class="mt-2">
+              {{
+                id
+                  ? 'Fotos são enviadas e excluídas separadamente dos dados do pet.'
+                  : 'As fotos selecionadas serão enviadas ao cadastrar o pet.'
+              }}
+            </p>
+          </div>
+        </section>
+        <section hlmCard class="min-w-0" aria-labelledby="vaccines-title">
+          <div hlmCardHeader>
+            <h2 hlmCardTitle id="vaccines-title">Vacinas</h2>
+            <p hlmCardDescription>Registre as vacinas e suas datas de aplicação.</p>
+          </div>
+          <div hlmCardContent>
+            <ul
+              class="vaccine-list list-none flex flex-col gap-[10px] [&_li]:flex [&_li]:flex-col [&_li]:gap-[9px] [&_li]:p-[13px_0] [&_li]:[border-bottom:1px_solid_var(--border)] [&_strong]:block [&_strong]:text-[13px] [&_strong]:wrap-anywhere [&_span]:block [&_span]:text-[11px] [&_span]:text-muted-foreground [&_span]:mt-[4px]"
+            >
+              @for (vaccine of pet()?.vaccines ?? []; track vaccine.id) {
+                <li>
+                  <div>
+                    <strong>{{ vaccine.name }}</strong
+                    ><span>{{
+                      vaccine.applicationDate
+                        ? (vaccine.applicationDate | date: 'dd/MM/yyyy' : 'UTC')
+                        : 'Data não informada'
+                    }}</span>
+                  </div>
+                  <div class="vaccine-actions flex gap-[8px] flex-wrap">
+                    <button
+                      hlmBtn
+                      variant="outline"
+                      [disabled]="saving()"
+                      (click)="editVaccine(vaccine)"
+                    >
+                      Editar</button
+                    ><app-confirm-delete
+                      label="Excluir"
+                      title="Excluir esta vacina?"
+                      description="Este registro de vacinação será removido permanentemente."
+                      [disabled]="saving()"
+                      (confirmed)="deleteVaccine(vaccine.id)"
+                    />
+                  </div>
+                </li>
+              }
+              @for (vaccine of pendingVaccines(); track $index) {
+                <li>
+                  <div>
+                    <strong>{{ vaccine.name }}</strong
+                    ><span>{{
+                      vaccine.applicationDate
+                        ? (vaccine.applicationDate | date: 'dd/MM/yyyy' : 'UTC')
+                        : 'Data não informada'
+                    }}</span>
+                  </div>
+                  <button
+                    hlmBtn
+                    variant="outline"
+                    [disabled]="saving()"
+                    (click)="removePendingVaccine($index)"
+                  >
+                    Remover seleção
+                  </button>
+                </li>
+              }
+            </ul>
+            <form [formGroup]="vaccineForm" (ngSubmit)="saveVaccine()">
+              <fieldset hlmFieldSet [disabled]="saving()">
+                <div hlmField class="my-0">
+                  <label hlmFieldLabel for="vaccine-name">{{
+                    editingVaccine() ? 'Editar vacina' : 'Nome da vacina'
+                  }}</label
+                  ><input
+                    hlmInput
+                    id="vaccine-name"
+                    formControlName="name"
+                    maxlength="100"
+                    placeholder="Ex.: Antirrábica"
+                  />
+                </div>
+                <div hlmField class="my-0">
+                  <label hlmFieldLabel for="vaccine-date">Data da aplicação</label>
+                  <hlm-date-picker
+                    #vaccinePicker
+                    formControlName="applicationDate"
+                    [maxDate]="today"
+                    [disabled]="saving()"
+                    captionLayout="dropdown"
+                    align="start"
+                  >
+                    <hlm-date-picker-trigger buttonId="vaccine-date" class="w-full"
+                      >Selecione uma data</hlm-date-picker-trigger
+                    >
+                    <div hlmDatePickerFooter class="flex justify-end p-2">
+                      <button
+                        hlmBtn
+                        type="button"
+                        variant="ghost"
+                        [disabled]="saving()"
+                        (click)="vaccinePicker.reset(); vaccinePicker.close()"
+                      >
+                        Limpar data
+                      </button>
+                    </div>
+                  </hlm-date-picker>
+                  @if (
+                    vaccineForm.controls.applicationDate.touched &&
+                    vaccineForm.controls.applicationDate.invalid
+                  ) {
+                    <hlm-field-error forceShow
+                      >A aplicação não pode estar no futuro.</hlm-field-error
+                    >
+                  }
+                </div>
+                <div class="vaccine-form-actions flex gap-[8px] flex-wrap mt-[18px]">
+                  <button
+                    hlmBtn
+                    type="submit"
+                    variant="secondary"
+                    [disabled]="saving() || vaccineForm.invalid"
+                  >
+                    {{ editingVaccine() ? 'Salvar vacina' : 'Adicionar vacina' }}
+                  </button>
+                  @if (editingVaccine()) {
+                    <button hlmBtn type="button" variant="ghost" (click)="cancelVaccine()">
+                      Cancelar
+                    </button>
+                  }
+                </div>
+              </fieldset>
+            </form>
+            <p hlmFieldDescription class="mt-2">
+              {{
+                id
+                  ? 'As alterações nas vacinas são salvas imediatamente.'
+                  : 'As vacinas adicionadas serão salvas ao cadastrar o pet.'
+              }}
+            </p>
+          </div>
+        </section>
+      </div>
+    </div>
+  }
+</section>
