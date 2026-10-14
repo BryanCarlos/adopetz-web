@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { API_URL } from '../config/api';
 import { ManagerPet, Page, PublicPet, PetDetails, VaccineDetails } from '../models/pet';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class PetsService {
@@ -12,15 +12,15 @@ export class PetsService {
       .set('Pagination.PageSize', 9)
       .set('Filter.AdoptionStatus', 'Available');
     if (searchTerm.trim()) params = params.set('Filter.SearchTerm', searchTerm.trim());
-    return this.http.get<Page<PublicPet>>(`${API_URL}/pets`, { params });
+    return this.http.get<Page<PublicPet>>(`${environment.apiUrl}/pets`, { params });
   }
   mine(pageNumber = 1) {
-    return this.http.get<Page<ManagerPet>>(`${API_URL}/pets/me`, {
+    return this.http.get<Page<ManagerPet>>(`${environment.apiUrl}/pets/me`, {
       params: { pageNumber, pageSize: 9 },
     });
   }
   get(id: string) {
-    return this.http.get<ManagerPet>(`${API_URL}/pets/me/${id}`);
+    return this.http.get<ManagerPet>(`${environment.apiUrl}/pets/me/${id}`);
   }
   create(details: PetDetails, images: File[], vaccines: VaccineDetails[]) {
     const body = new FormData();
@@ -35,29 +35,29 @@ export class PetsService {
       if (vaccine.applicationDate)
         body.append(`Vaccines[${index}].ApplicationDate`, vaccine.applicationDate);
     });
-    return this.http.post<{ id: string }>(`${API_URL}/pets`, body);
+    return this.http.post<{ id: string }>(`${environment.apiUrl}/pets`, body);
   }
   update(id: string, details: PetDetails) {
-    return this.http.put<void>(`${API_URL}/pets/${id}`, details);
+    return this.http.put<void>(`${environment.apiUrl}/pets/${id}`, details);
   }
   delete(id: string) {
-    return this.http.delete<void>(`${API_URL}/pets/${id}`);
+    return this.http.delete<void>(`${environment.apiUrl}/pets/${id}`);
   }
   addImage(id: string, file: File) {
     const body = new FormData();
     body.append('File', file);
-    return this.http.post<void>(`${API_URL}/pets/${id}/images`, body);
+    return this.http.post<void>(`${environment.apiUrl}/pets/${id}/images`, body);
   }
   deleteImage(id: string, imageId: string) {
-    return this.http.delete<void>(`${API_URL}/pets/${id}/images/${imageId}`);
+    return this.http.delete<void>(`${environment.apiUrl}/pets/${id}/images/${imageId}`);
   }
   addVaccine(id: string, vaccine: VaccineDetails) {
-    return this.http.post<void>(`${API_URL}/pets/${id}/vaccines`, vaccine);
+    return this.http.post<void>(`${environment.apiUrl}/pets/${id}/vaccines`, vaccine);
   }
   updateVaccine(id: string, vaccineId: string, vaccine: VaccineDetails) {
-    return this.http.put<void>(`${API_URL}/pets/${id}/vaccines/${vaccineId}`, vaccine);
+    return this.http.put<void>(`${environment.apiUrl}/pets/${id}/vaccines/${vaccineId}`, vaccine);
   }
   deleteVaccine(id: string, vaccineId: string) {
-    return this.http.delete<void>(`${API_URL}/pets/${id}/vaccines/${vaccineId}`);
+    return this.http.delete<void>(`${environment.apiUrl}/pets/${id}/vaccines/${vaccineId}`);
   }
 }

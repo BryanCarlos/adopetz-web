@@ -2,14 +2,14 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, of, switchMap, throwError } from 'rxjs';
-import { API_URL } from '../config/api';
 import { AuthService } from '../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const auth = inject(AuthService);
   const router = inject(Router);
-  const isApi = request.url.startsWith(`${API_URL}/`);
-  const isAuth = request.url.startsWith(`${API_URL}/users/auth/`);
+  const isApi = request.url.startsWith(`${environment.apiUrl}/`);
+  const isAuth = request.url.startsWith(`${environment.apiUrl}/users/auth/`);
   const token = auth.accessToken();
   if (!isApi || isAuth || !token) return next(request);
   const authorized = (value: string) =>

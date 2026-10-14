@@ -5,13 +5,13 @@ import { provideRouter, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { authInterceptor } from '../interceptors/auth.interceptor';
-import { API_URL } from '../config/api';
+import { environment } from '../../../environments/environment';
 
 describe('In-memory session lifecycle', () => {
   let auth: AuthService;
   let http: HttpTestingController;
   let client: HttpClient;
-  const endpoint = `${API_URL}/users/auth/refresh-token`;
+  const endpoint = `${environment.apiUrl}/users/auth/refresh-token`;
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
@@ -32,7 +32,7 @@ describe('In-memory session lifecycle', () => {
   });
   function login(token = 'first-token') {
     auth.login('ong@example.org', 'test-password').subscribe();
-    http.expectOne(`${API_URL}/users/auth/login`).flush({ accessToken: token });
+    http.expectOne(`${environment.apiUrl}/users/auth/login`).flush({ accessToken: token });
   }
   it('keeps JWT out of persistent browser storage', () => {
     const persist = vi.spyOn(Storage.prototype, 'setItem');
@@ -45,17 +45,17 @@ describe('In-memory session lifecycle', () => {
   it('shares one renewal for concurrent 401s and retries with the new bearer token', () => {
     login();
     let successes = 0;
-    client.get(`${API_URL}/pets/me`).subscribe(() => successes++);
-    client.get(`${API_URL}/pets/me/example`).subscribe(() => successes++);
-    http.expectOne(`${API_URL}/pets/me`).flush({}, { status: 401, statusText: 'Unauthorized' });
+    client.get(`${environment.apiUrl}/pets/me`).subscribe(() => successes++);
+    client.get(`${environment.apiUrl}/pets/me/example`).subscribe(() => successes++);
+    http.expectOne(`${environment.apiUrl}/pets/me`).flush({}, { status: 401, statusText: 'Unauthorized' });
     http
-      .expectOne(`${API_URL}/pets/me/example`)
+      .expectOne(`${environment.apiUrl}/pets/me/example`)
       .flush({}, { status: 401, statusText: 'Unauthorized' });
     const refresh = http.expectOne(endpoint);
     expect(refresh.request.withCredentials).toBe(true);
     expect(refresh.request.headers.has('Authorization')).toBe(false);
     refresh.flush({ accessToken: 'renewed-token' });
-    const retries = http.match((req) => req.url.startsWith(`${API_URL}/pets/me`));
+    const retries = http.match((req) => req.url.startsWith(`${environment.apiUrl}/pets/me`));
     expect(retries.length).toBe(2);
     retries.forEach((request) => {
       expect(request.request.headers.get('Authorization')).toBe('Bearer renewed-token');
@@ -66,22 +66,22 @@ describe('In-memory session lifecycle', () => {
   it('does not loop when the retried request is unauthorized', () => {
     login();
     let failed = false;
-    client.get(`${API_URL}/pets/me`).subscribe({
+    client.get(`${environment.apiUrl}/pets/me`).subscribe({
       error: () => {
         failed = true;
       },
     });
-    http.expectOne(`${API_URL}/pets/me`).flush({}, { status: 401, statusText: 'Unauthorized' });
+    http.expectOne(`${environment.apiUrl}/pets/me`).flush({}, { status: 401, statusText: 'Unauthorized' });
     http.expectOne(endpoint).flush({ accessToken: 'renewed-token' });
-    http.expectOne(`${API_URL}/pets/me`).flush({}, { status: 401, statusText: 'Unauthorized' });
+    http.expectOne(`${environment.apiUrl}/pets/me`).flush({}, { status: 401, statusText: 'Unauthorized' });
     http.expectNone(endpoint);
     expect(failed).toBe(true);
     expect(auth.accessToken()).toBeNull();
   });
   it('keeps the current session on a transient renewal failure', () => {
     login();
-    client.get(`${API_URL}/pets/me`).subscribe({ error: () => {} });
-    http.expectOne(`${API_URL}/pets/me`).flush({}, { status: 401, statusText: 'Unauthorized' });
+    client.get(`${environment.apiUrl}/pets/me`).subscribe({ error: () => {} });
+    http.expectOne(`${environment.apiUrl}/pets/me`).flush({}, { status: 401, statusText: 'Unauthorized' });
     http.expectOne(endpoint).error(new ProgressEvent('error'));
     expect(auth.accessToken()).toBe('first-token');
     expect(auth.sessionUnavailable()).toBe(true);
@@ -99,9 +99,9 @@ describe('In-memory session lifecycle', () => {
     login();
     auth.refresh().subscribe({ error: () => {} });
     auth.logout().subscribe();
-    http.expectNone(`${API_URL}/users/auth/logout`);
+    http.expectNone(`${environment.apiUrl}/users/auth/logout`);
     http.expectOne(endpoint).flush({ accessToken: 'late-token' });
-    const logout = http.expectOne(`${API_URL}/users/auth/logout`);
+    const logout = http.expectOne(`${environment.apiUrl}/users/auth/logout`);
     expect(logout.request.withCredentials).toBe(true);
     logout.flush(null);
     expect(auth.accessToken()).toBeNull();
@@ -110,7 +110,7 @@ describe('In-memory session lifecycle', () => {
     login();
     auth.changePassword('incorrect', 'AnotherPassword1').subscribe({ error: () => {} });
     http
-      .expectOne(`${API_URL}/users/me/change-password`)
+      .expectOne(`${environment.apiUrl}/users/me/change-password`)
       .flush({ errorCode: 'INVALID_CREDENTIALS' }, { status: 401, statusText: 'Unauthorized' });
     http.expectNone(endpoint);
     expect(auth.accessToken()).toBe('first-token');
