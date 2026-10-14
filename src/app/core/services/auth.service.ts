@@ -17,8 +17,8 @@ import {
   timeout,
   timer,
 } from 'rxjs';
-import { API_URL } from '../config/api';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 interface Tokens {
   accessToken: string;
@@ -47,7 +47,7 @@ export class AuthService {
       this.token.set(null);
       return this.sessionLock(() =>
         this.http.post<Tokens>(
-          `${API_URL}/users/auth/login`,
+          `${environment.apiUrl}/users/auth/login`,
           { email, password },
           { withCredentials: true },
         ),
@@ -72,7 +72,7 @@ export class AuthService {
     const version = this.version;
     this.inFlight = this.sessionLock(() =>
       this.http
-        .post<Tokens>(`${API_URL}/users/auth/refresh-token`, {}, { withCredentials: true })
+        .post<Tokens>(`${environment.apiUrl}/users/auth/refresh-token`, {}, { withCredentials: true })
         .pipe(timeout(10000)),
     ).pipe(
       map((response) => {
@@ -109,7 +109,7 @@ export class AuthService {
   }
 
   changePassword(currentPassword: string, newPassword: string) {
-    return this.http.patch<void>(`${API_URL}/users/me/change-password`, {
+    return this.http.patch<void>(`${environment.apiUrl}/users/me/change-password`, {
       currentPassword,
       newPassword,
     });
@@ -125,7 +125,7 @@ export class AuthService {
         catchError(() => of(null)),
         switchMap(() =>
           this.sessionLock(() =>
-            this.http.post<void>(`${API_URL}/users/auth/logout`, {}, { withCredentials: true }),
+            this.http.post<void>(`${environment.apiUrl}/users/auth/logout`, {}, { withCredentials: true }),
           ),
         ),
         tap(() => this.clearSession()),
